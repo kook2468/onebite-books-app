@@ -5,7 +5,8 @@ import { BookData } from "@/types";
 
 async function Footer() {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book`
+    `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book`,
+    { cache: "force-cache" }
   );
 
   if (!response.ok) return <footer>제작 @kook2468</footer>;
@@ -15,7 +16,7 @@ async function Footer() {
 
   return (
     <footer>
-      <div>제작 @kook</div>
+      <div>제작 @kook2468</div>
       <div>{bookCount}개의 도서가 등록되어 있습니다.</div>
     </footer>
   );
