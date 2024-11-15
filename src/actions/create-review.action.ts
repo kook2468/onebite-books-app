@@ -1,5 +1,7 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
+
 export async function createReviewAction(formData: FormData) {
   const bookId = formData.get("bookId")?.toString();
   const content = formData.get("content")?.toString(); //있을때만 toString으로 변경
@@ -22,6 +24,7 @@ export async function createReviewAction(formData: FormData) {
       return;
     }
     console.log("response : ", response);
+    revalidatePath(`/book/${bookId}`); //재검증
   } catch (err) {
     console.error(err);
     return;
