@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import ReviewItem from "@/components/review-item";
 import { ReviewEditor } from "@/components/review-editor";
 import Image from "next/image";
+import { Metadata } from "next";
 
 //export const dynamicParams = false; //generateStaticParams() 에 설정된 id 값 이외는 모두 404로 보내기
 export function generateStaticParams() {
@@ -12,7 +13,8 @@ export function generateStaticParams() {
 
 async function BookDetail({ bookId }: { bookId: string }) {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book/${bookId}`
+    `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book/${bookId}`,
+    { cache: "force-cache" }
   );
 
   if (!response.ok) {
@@ -68,6 +70,36 @@ async function ReviewList({ bookId }: { bookId: string }) {
       ))}
     </section>
   );
+}
+
+/* metadata 설정 */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id?: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book/${id}`,
+    { cache: "force-cache" }
+  );
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  const book: BookData = await response.json();
+
+  return {
+    title: `${book.title} - 한입 북스`,
+    description: book.description,
+    openGraph: {
+      title: `${book.title} - 한입 북스`,
+      description: book.description,
+      images: [book.coverImgUrl],
+    },
+  };
 }
 
 export default function Page({ params }: { params: { id: string } }) {
