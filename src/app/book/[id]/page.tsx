@@ -7,8 +7,21 @@ import Image from "next/image";
 import { Metadata } from "next";
 
 //export const dynamicParams = false; //generateStaticParams() 에 설정된 id 값 이외는 모두 404로 보내기
-export function generateStaticParams() {
-  return [{ id: "1" }, { id: "2" }, { id: "3" }];
+export async function generateStaticParams() {
+  //현재 등록된 모든 도서 페이지를 정적으로 생성
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book/`
+  );
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  const books: BookData[] = await response.json();
+
+  return books.map((book) => {
+    id: book.id.toString();
+  });
 }
 
 async function BookDetail({ bookId }: { bookId: string }) {
